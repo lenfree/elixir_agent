@@ -12,19 +12,24 @@ defmodule NewRelic.Util.HTTP do
 
     # config :new_relic_agent,
     #   app_name: Application,
-    #   proxy_host: "localhost",
-    #   proxy_port: 3128,
+    #   proxy_url: "http://localhost:3128",
     #   no_proxy: ["localhost","test"]
 
-    proxy_host = Application.get_env(:new_relic_agent, :proxy_host)
-    proxy_port = Application.get_env(:new_relic_agent, :proxy_port)
-    no_proxy = Application.get_env(:new_relic_agent, :no_proxy)
+    no_proxy = Application.get_env(:new_relic_agent, :no_proxy, "")
 
-    :httpc.set_options(
-      proxy:
-        {{String.to_charlist(proxy_host), proxy_port},
-         [Enum.map(no_proxy, &String.to_charlist/1)]}
-    )
+    case Application.get_env(:new_relic_agent, :proxy_url) do
+      nil ->
+        nil
+
+      _ ->
+        %{host: host, port: port} = URI.parse(Application.get_env(:new_relic_agent, :proxy_url))
+
+        :httpc.set_options(
+          proxy:
+            {{String.to_charlist(host), port},
+             [String.split(no_proxy, ",") |> Enum.map(&String.to_charlist/1)]}
+        )
+    end
 
     with {:ok, {{_, status_code, _}, _headers, body}} <-
            :httpc.request(:post, request, http_options(), []) do
