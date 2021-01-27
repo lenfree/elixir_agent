@@ -9,6 +9,8 @@
 
 The Open-Source Elixir Agent allows you to monitor your `Elixir` applications with New Relic. It helps you track transactions, distributed traces and other parts of your application's behavior and provides an overview of underlying [BEAM activity](https://github.com/newrelic/elixir_agent/wiki/BEAM-stats-page).
 
+This contains a temporary workaround on setting up proxy!
+
 [View the Documentation](https://hexdocs.pm/new_relic_agent)
 
 ### Support Statement
